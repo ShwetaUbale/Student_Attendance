@@ -12,12 +12,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
