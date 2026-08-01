@@ -24,10 +24,13 @@ pipeline {
             steps {
                 script {
                     // Stop and remove existing container if running
-                    sh 'docker stop attendance-con || true'
-                    sh 'docker rm attendance-con || true'
-                    // Run new container on port 3000
-                    sh 'docker run -d --name attendance-con -p 3000:3000 attendance:latest'
+                    sh '''
+                        if docker ps -q --filter "name=attendance-con" | grep -q .; then
+                            docker stop attendance-con
+                            docker rm attendance-con
+                        fi
+                        docker run -d --name attendance-con -p 3100:3000 attendance:latest
+                    '''
                 }
             }
         }
