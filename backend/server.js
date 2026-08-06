@@ -4,15 +4,14 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'Public')));
+app.use(express.static(path.join(__dirname, '..')));
 
 // Silence Chrome DevTools and browser favicon requests
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.status(204).end());
 
 // MongoDB Connection
-// MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://host.docker.internal:27017/attendance_db';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/attendance_db';
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB successfully.'))
   .catch(err => console.error('MongoDB connection error:', err));

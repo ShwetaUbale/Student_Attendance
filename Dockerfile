@@ -7,6 +7,8 @@ RUN npm install
 
 COPY . .
 
+WORKDIR /app/backend
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

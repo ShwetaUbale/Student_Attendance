@@ -235,21 +235,26 @@
 
   <!-- TEACHER MODULE -->
   <div id="teacher" class="module active">
-    <h2>Mark Attendance</h2>
+    <h2>Mark Class Attendance</h2>
     <div class="form-group">
-      <label for="studentName">Student Full Name</label>
-      <input type="text" id="studentName" placeholder="e.g. John Doe" required />
-    </div>
-    
-    <div class="form-group">
-      <label for="status">Status</label>
-      <select id="status">
-        <option value="Present">Present</option>
-        <option value="Absent">Absent</option>
-      </select>
+      <label for="attendanceDate">Date</label>
+      <input type="date" id="attendanceDate" required />
     </div>
 
-    <button class="btn-action" onclick="markAttendance()">Submit Record</button>
+    <div class="table-container">
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th>Roll No.</th>
+            <th>Student Name</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceBody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn-action" onclick="submitBulkAttendance()" style="margin-top: 1.5rem;">Submit All Records</button>
   </div>
 
   <!-- STUDENT MODULE -->
@@ -293,6 +298,140 @@
 </div>
 
 <script>
+  // Class Student List - MCA Batch
+  const classStudents = [
+    { roll: 'MCA2504002', name: 'AYUSHI SURESH WASALWAR' },
+    { roll: 'MCA2504003', name: 'PRIYA LUHAR' },
+    { roll: 'MCA2504004', name: 'BURGUTE ASHWINI BIRMAL' },
+    { roll: 'MCA2504006', name: 'VISHAKHA BHAUSAHEB KHILARE' },
+    { roll: 'MCA2504008', name: 'KHUSHI DAHARWAL' },
+    { roll: 'MCA2504013', name: 'SHRUTI CHANDILKAR' },
+    { roll: 'MCA2504021', name: 'SHABARISH P SUJITH' },
+    { roll: 'MCA2504022', name: 'PRASANN TERADAL' },
+    { roll: 'MCA2504024', name: 'RONAK SURENDRA JAISWAR' },
+    { roll: 'MCA2504026', name: 'YASH RAJESH RAUT' },
+    { roll: 'MCA2504027', name: 'MAURYA VIBHAV KUMAR VINOD KUMAR' },
+    { roll: 'MCA2504028', name: 'KOKALGE SIDHESHWAR SOMNATH' },
+    { roll: 'MCA2504029', name: 'AVINASH VIKAS KARALE' },
+    { roll: 'MCA2504030', name: 'PARIKSHIT MOIN' },
+    { roll: 'MCA2504032', name: 'TEJAS RAJU HUDEKAR' },
+    { roll: 'MCA2504034', name: 'PRAVIN' },
+    { roll: 'MCA2504038', name: 'TUSHAR RAJPUROHIT' },
+    { roll: 'MCA2504041', name: 'NIKHIL CHEJARA' },
+    { roll: 'MCA2504043', name: 'KRUSHNA SHAHADEV SHENDE' },
+    { roll: 'MCA2504044', name: 'UJMA CHAND MULANI' },
+    { roll: 'MCA2504054', name: 'PRERNA PRAVIN KANHERKAR' },
+    { roll: 'MCA2504056', name: 'SAMIKSHA SAHARE' },
+    { roll: 'MCA2504058', name: 'BHAWANA GAHLOT' },
+    { roll: 'MCA2504061', name: 'DNYANESHWAR DHUMALE' },
+    { roll: 'MCA2504062', name: 'PRADEEP ASHOK KALAMB' },
+    { roll: 'MCA2504066', name: 'RAJAT VIJAY WARUDE' },
+    { roll: 'MCA2504072', name: 'KOLAMBE YASH VIKAS' },
+    { roll: 'MCA2504088', name: 'AKANKSHA BAJRANGBALI KERLE' },
+    { roll: 'MCA2504096', name: 'PRATIKSHA KADAM' },
+    { roll: 'MCA2504097', name: 'VAISHNAVI JEEVAN SHIRKE' },
+    { roll: 'MCA2504103', name: 'SAUJANYA KHARAT' },
+    { roll: 'MCA2504104', name: 'TANMAY MANE' },
+    { roll: 'MCA2504107', name: 'SWARAJ ASHOK MARATHE' },
+    { roll: 'MCA2504110', name: 'ANISH GAUR' },
+    { roll: 'MCA2504113', name: 'AMBAR DEVANAND MASURKAR' },
+    { roll: 'MCA2504114', name: 'AVISHKAR AVINASH CHAVAN' },
+    { roll: 'MCA2504115', name: 'VIJAY SONUNE' },
+    { roll: 'MCA2504117', name: 'ABHISHEK KHANZODE' },
+    { roll: 'MCA2504118', name: 'SOURABH OZA' },
+    { roll: 'MCA2504122', name: 'AYUSH ASHWIN BHARAD' },
+    { roll: 'MCA2504123', name: 'PRATYUSH PADILE' },
+    { roll: 'MCA2504125', name: 'DESHPANDE MANAS NILESH' },
+    { roll: 'MCA2504128', name: 'SUHAS SUDAM POKALE' },
+    { roll: 'MCA2504131', name: 'VISHAL KUMAR THAKUR' },
+    { roll: 'MCA2504134', name: 'APARNA KURVE' },
+    { roll: 'MCA2504136', name: 'ROHAN NAMDEV BHEGADE' },
+    { roll: 'MCA2504146', name: 'SAKSHI BADHE' },
+    { roll: 'MCA2504150', name: 'UBALE SHWETA SANDESH' },
+    { roll: 'MCA2504151', name: 'LOKESH CHINNASWAMI BHANDARI' },
+    { roll: 'MCA2504155', name: 'ADITYA SAJEEV' },
+    { roll: 'MCA2504159', name: 'CHANDRAKANT KOTTALWAR' },
+    { roll: 'MCA2504161', name: 'RUSHIKESH BABASAHEB JAGTAP' },
+    { roll: 'MCA2504171', name: 'MITHIL SHAILESH BORSE' },
+    { roll: 'MCA2504173', name: 'RAHUL' },
+    { roll: 'MCA2504182', name: 'RAVI PUTTHEWAD' }
+  ];
+
+  // Initialize the attendance table
+  function initializeAttendanceTable() {
+    const tbody = document.getElementById('attendanceBody');
+    tbody.innerHTML = '';
+    
+    classStudents.forEach(student => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td style="text-align: center; font-weight: 500;">${student.roll}</td>
+        <td><strong>${student.name}</strong></td>
+        <td>
+          <select class="status-select" data-student-id="${student.roll}" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
+            <option value="">-- Select --</option>
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Late">Late</option>
+          </select>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  async function submitBulkAttendance() {
+    const attendanceDate = document.getElementById('attendanceDate').value;
+    if (!attendanceDate) {
+      alert('Please select a date');
+      return;
+    }
+
+    const records = [];
+    document.querySelectorAll('.status-select').forEach(select => {
+      const status = select.value;
+      if (status) {
+        const studentId = select.getAttribute('data-student-id');
+        const student = classStudents.find(s => s.roll == studentId);
+        records.push({
+          studentName: student.name,
+          status: status,
+          date: new Date(attendanceDate).toISOString()
+        });
+      }
+    });
+
+    if (records.length === 0) {
+      alert('Please mark attendance for at least one student');
+      return;
+    }
+
+    try {
+      for (const record of records) {
+        const response = await fetch('/api/attendance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+
+        if (!response.ok) {
+          alert(`Error saving attendance for ${record.studentName}`);
+          return;
+        }
+      }
+
+      alert(`Successfully saved attendance for ${records.length} students!`);
+      document.getElementById('attendanceDate').value = '';
+      initializeAttendanceTable();
+      fetchAttendance('studentTable');
+      if (document.getElementById('admin').classList.contains('active')) {
+        fetchAttendance('adminTable');
+      }
+    } catch (error) {
+      alert('Error submitting attendance: ' + error.message);
+    }
+  }
+
   function showModule(id) {
     // Hide all modules and deactivate buttons
     document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
@@ -301,30 +440,10 @@
     // Show active module and highlight active button
     document.getElementById(id).classList.add('active');
     document.getElementById(`btn-${id}`).classList.add('active-btn');
-  }
 
-  async function markAttendance() {
-    const studentName = document.getElementById('studentName').value;
-    const status = document.getElementById('status').value;
-    
-    if(!studentName) return alert('Please enter student name');
-
-    const response = await fetch('/api/attendance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ studentName, status })
-    });
-
-    if (!response.ok) {
-      alert('Unable to save attendance.');
-      return;
-    }
-
-    alert('Attendance Saved Successfully!');
-    document.getElementById('studentName').value = '';
-    fetchAttendance('studentTable');
-    if (document.getElementById('admin').classList.contains('active')) {
-      fetchAttendance('adminTable');
+    // Initialize attendance table when teacher module is shown
+    if (id === 'teacher') {
+      initializeAttendanceTable();
     }
   }
 
@@ -339,15 +458,11 @@
       return;
     }
 
-    if (data.length === 0) {
-      const emptyCols = tableId === 'adminTable' ? 4 : 3;
-      tbody.innerHTML = `<tr><td colspan="${emptyCols}" style="text-align:center; color:#94a3b8;">No records found</td></tr>`;
-      return;
-    }
-
     data.forEach(item => {
       const statusBadge = item.status === 'Present' 
         ? `<span class="badge badge-present">Present</span>` 
+        : item.status === 'Late'
+        ? `<span class="badge badge-absent">Late</span>`
         : `<span class="badge badge-absent">Absent</span>`;
 
       const row = tableId === 'adminTable' 
@@ -365,6 +480,13 @@
       tbody.innerHTML += row;
     });
   }
+
+  // Set today's date as default and initialize table on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('attendanceDate').value = today;
+    initializeAttendanceTable();
+  });
 </script>
 </body>
 </html>
