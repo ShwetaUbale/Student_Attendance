@@ -20,20 +20,22 @@ pipeline {
             }
         }
 
-        stage('Run Application Container') {
-            steps {
-                script {
-                    // Stop and remove existing container if running
-                    sh '''
-                        if docker ps -q --filter "name=attendance-con" | grep -q .; then
-                            docker stop attendance-con
-                            docker rm attendance-con
-                        fi
-                        docker run -d --name attendance-con -p 3100:3000 attendance:latest
-                    '''
-                }
-            }
+ stage('Run Application Container') {
+    steps {
+        script {
+            sh '''
+                # Stop container if it is currently running
+                docker stop attendance-con || true
+
+                # Remove container if it exists (running or stopped)
+                docker rm attendance-con || true
+
+                # Start the fresh container
+                docker run -d --name attendance-con -p 3100:3000 attendance:latest
+            '''
         }
+    }
+}
     }
 
     post {
