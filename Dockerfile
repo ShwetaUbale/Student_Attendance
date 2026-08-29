@@ -6,9 +6,8 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-
-WORKDIR /app/backend
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

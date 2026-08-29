@@ -2,13 +2,27 @@
   "name": "attendance-system",
   "version": "1.0.0",
   "description": "College Attendance System with CI/CD",
-  "main": "backend/server.js",
+  "main": "backend/server.ts",
   "scripts": {
-    "start": "node backend/server.js",
-    "test": "node -e \"console.log('Running Tests...'); process.exit(0);\""
+    "build": "tsc --project tsconfig.json",
+    "start": "tsx backend/server.ts",
+    "dev": "tsx backend/server.ts",
+    "test": "mocha --require tsx backend/**/*.test.ts --reporter spec"
   },
   "dependencies": {
     "express": "^4.19.2",
     "mongoose": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.0",
+    "@types/express": "^5.0.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^22.15.30",
+    "@types/supertest": "^6.0.0",
+    "chai": "^5.0.0",
+    "mocha": "^11.0.0",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }
